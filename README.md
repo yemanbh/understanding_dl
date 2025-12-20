@@ -1,0 +1,2 @@
+# understanding_dl
+This repository contains python code for replicating figures in the Understanding Deep Learning book by Simon  Prince
