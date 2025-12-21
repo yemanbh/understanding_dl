@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import plotly.graph_objects as go
+import plotly.express as ex
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 
 class View3D:
     """
@@ -224,3 +227,124 @@ class View3D:
         self.legend()
         
         plt.show()
+
+class PlotlibViewer:
+    def __init__(self, mode, width=800, height=600):
+        
+        self.mode = mode
+        self.width = width
+        self.height = height
+        self.fig = go.Figure()
+
+    
+    def surface(self, x, y, z, cmap="Viridis", opacity=0.9):
+        assert self.mode == '3d', f"Specified mode={self.mode}, but ploting 3D surface"
+        self.fig.add_trace(
+            go.Surface(
+            x=x,
+            y=y,
+            z=z,
+            colorscale=cmap,
+            opacity=opacity
+            )
+        )
+    
+    def scatter3d(self, x, y, z, color=None, cmap="Reds", name="scatter 3d", s=5):
+        assert self.mode == '3d', f"Specified mode={self.mode}, but ploting 3D scatter plot"
+        self.fig.add_trace(
+            go.Scatter3d(
+                x=x.flatten(),
+                y=y.flatten(),
+                z=z.flatten(),
+                mode='markers', # markers only
+                marker=dict(
+                    size=5,
+                    color= color, # z.flatten(),          # color by z value
+                    colorscale=cmap,
+                    opacity=0.5
+                ),
+                name=name
+            )
+        )
+    
+    def contour(self, x, y, z):
+        
+        assert self.mode == '2d', f"Specified mode={self.mode}, but ploting 2D contour"
+        self.fig.add_trace(
+            go.Contour(
+                x=x,
+                y=y,
+                z=z,
+                colorscale="Viridis",
+                contours=dict(showlabels=True)
+            )
+        )
+
+    def scatter2d(self, x, y, name="scatter 2d", size=5, color=None, symbol="circle", cmap='Reds'):
+        assert self.mode == '2d', f"Specified mode={self.mode}, but ploting 2D scatter plot"
+        # scatter points ON TOP
+        self.fig.add_trace(
+            go.Scatter(
+                x=x,
+                y=y,
+                mode="markers",
+                marker=dict(
+                    size=size,
+                    colorscale=cmap,
+                    color=color,
+                    symbol=symbol,
+                    line=dict(width=0, color="black")
+                ),
+                name=name
+            )
+        )
+    
+    def update_layout_2d(self, xlable, ylabel, title):
+
+        self.fig.update_layout(
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=1.02,
+                        xanchor="center",
+                        x=0.5
+                    ),                
+                    xaxis_title=xlable,
+                    yaxis_title=ylabel,
+                    title=title,
+                    height=self.height,
+                    width=self.width
+                )
+        
+    def update_layout_3d(self, xlable, ylabel,zlabel, title):
+
+        self.fig.update_layout(
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=1.02,
+                        xanchor="center",
+                        x=0.5
+                    ),   
+                    scene=dict(             
+                    xaxis_title=xlable,
+                    yaxis_title=ylabel,
+                    zaxis_title=zlabel,
+                    ),
+                    title=title,
+                    height=self.height,
+                    width=self.width
+                )
+        
+        
+    def show(self, xlable='x', ylabel='y', zlabel='z', title=None):
+
+        # update layout
+        if self.mode == "2d":
+            self.update_layout_2d(xlable, ylabel, title)
+        else:
+            self.update_layout_3d(xlable, ylabel, zlabel, title)
+        
+        self.fig.show()
+
+        
