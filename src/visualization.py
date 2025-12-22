@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 import plotly.express as ex
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
+import plotly.figure_factory as ff
 
 class View3D:
     """
@@ -279,6 +280,52 @@ class PlotlibViewer:
                 contours=dict(showlabels=True)
             )
         )
+
+    def quiver3d(self, x, y, z, u, v, w):
+
+        x1 = x + u
+        y1 = y + v
+        z1 = z + w
+
+        # fig = go.Figure()
+
+        # 1️⃣ Vector shafts (lines)
+        for i in range(len(x)):
+            self.fig.add_trace(
+                go.Scatter3d(
+                    x=[x[i], x1[i]],
+                    y=[y[i], y1[i]],
+                    z=[z[i], z1[i]],
+                    mode="lines",
+                    line=dict(width=2),
+                    showlegend=False
+                )
+            )
+
+            # 2️Arrowheads (cones)
+            self.fig.add_trace(
+                go.Cone(
+                    x=x1,
+                    y=y1,
+                    z=z1,
+                    u=u,
+                    v=v,
+                    w=w,
+                    anchor="tail",
+                    sizemode="absolute",
+                    sizeref=0.25,
+                    showscale=False
+                )
+            )
+
+    def quiver2d(self, x, y, u, v):
+        # Create quiver
+        quiver_fig = ff.create_quiver(x, y, u, v, arrow_scale=0.1)
+
+        # Create a new figure and add the quiver trace
+
+        for trace in quiver_fig.data:
+            self.fig.add_trace(trace)
 
     def scatter2d(self, x, y, name="scatter 2d", size=5, color=None, symbol="circle", cmap='Reds'):
         assert self.mode == '2d', f"Specified mode={self.mode}, but ploting 2D scatter plot"
