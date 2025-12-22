@@ -1,6 +1,7 @@
 import torch
 from typing import List, Tuple, Dict
 import matplotlib.pyplot as plt
+from pathlib import Path
 import numpy as np
 import torch
 import plotly.graph_objects as go
@@ -318,9 +319,9 @@ class PlotlibViewer:
                 )
             )
 
-    def quiver2d(self, x, y, u, v):
+    def quiver2d(self, x, y, u, v, name='grad_dir'):
         # Create quiver
-        quiver_fig = ff.create_quiver(x, y, u, v, arrow_scale=0.1)
+        quiver_fig = ff.create_quiver(x, y, u, v, arrow_scale=0.1, name=name)
 
         # Create a new figure and add the quiver trace
 
@@ -393,5 +394,13 @@ class PlotlibViewer:
             self.update_layout_3d(xlable, ylabel, zlabel, title)
         
         self.fig.show()
+    
+    def save(self, file_path: Path):
+        if not file_path.is_file:
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        if not str(file_path).endswith('html'):
+            raise ValueError('file name should have html extension')
+        self.fig.write_html(file_path)
 
         
