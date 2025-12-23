@@ -231,11 +231,18 @@ class View3D:
         plt.show()
 
 class PlotlibViewer:
-    def __init__(self, mode, width=800, height=600):
+    def __init__(self, 
+                 mode, 
+                 width=800, 
+                 height=600,
+                 renderer=None):
         
         self.mode = mode
         self.width = width
         self.height = height
+        self.renderer = renderer
+
+        # create figure
         self.fig = go.Figure()
 
     
@@ -393,14 +400,19 @@ class PlotlibViewer:
         else:
             self.update_layout_3d(xlable, ylabel, zlabel, title)
         
-        self.fig.show()
+        print(f'renderer is {self.renderer}')
+        self.fig.show(renderer=self.renderer)
     
     def save(self, file_path: Path):
         if not file_path.is_file:
             file_path.parent.mkdir(parents=True, exist_ok=True)
         
-        if not str(file_path).endswith('html'):
-            raise ValueError('file name should have html extension')
-        self.fig.write_html(file_path)
+        ext = file_path.suffix
+        if ext not in ['.png', '.html']:
+            raise ValueError('file name should have html or png extension')
+        if ext == '.html':
+            self.fig.write_html(file_path)
+        else:
+            self.fig.write_image(file_path)
 
         
