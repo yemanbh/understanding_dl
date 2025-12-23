@@ -8,3 +8,5 @@ This repository contains python code for replicating figures in the "Understandi
 - torch 
 - seaborn 
 - pandas
+- plotly
+- numpy
